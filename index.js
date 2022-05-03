@@ -148,7 +148,7 @@ app.post('/buy', (req, res) => {
 })
 
 // delete item from cart
-app.post('/delete', (req, res) => {
+app.post('/delete_cart', (req, res) => {
     base('user').find(`${req.body.user_id}`, function (err, record) {
         const reqId = req.body.id
         if (err) {
@@ -167,6 +167,100 @@ app.post('/delete', (req, res) => {
               "id": `${req.body.user_id}`,
               "fields": {
                 "cart": `${id}`
+              }
+            }
+          ], function(err, records) {
+            if (err) {
+              console.error(err);
+              return;
+            }
+            records.forEach(function(record) {
+              res.send(`Item Removed: ${reqId}`)
+            });
+          });
+    })
+})
+
+// Add to wishlist
+app.post('/wishlist', (req, res) => {
+    base('user').find(`${req.body.user_id}`, function (err, record) {
+        const reqId = req.body.id
+        if (err) { 
+            res.status(404)
+            res.send('user not found')
+            console.error(err)
+            return
+        }
+        if (!record.get('wishlist')) {
+            let obj = [{id: reqId}]
+            let id = JSON.stringify(obj)
+            console.log(id)
+            base('user').update([
+                {
+                    "id": `${req.body.user_id}`,
+                    "fields": {
+                        "wishlist": `${id}`
+                    }
+                }
+            ], function (err, records) {
+                if (err) {
+                    console.error(err);
+                    return;
+                }else{
+                    res.send('Added to wishlist')
+                }
+
+            });
+        } else {
+            let id = JSON.parse(record.get('wishlist'))
+            let checkDuplicate = id.find(o => o.id === `${reqId}`) 
+            if(checkDuplicate){
+                res.send('Already Added to Wishlist')
+                return
+            }
+            id.splice(0, 0, {id:reqId})
+            id = JSON.stringify(id)
+            console.log(id)
+            base('user').update([
+                {
+                    "id": `${req.body.user_id}`,
+                    "fields": {
+                        "wishlist": `${id}`
+                    }
+                }
+            ], function (err, records) {
+                if (err) {
+                    console.error(err);
+                    return;
+                }else{
+                    res.send(records[0].fields.wishlist)
+                }
+            });
+        }
+    });
+
+})
+
+// delete item from wishlist
+app.post('/delete_wishlist', (req, res) => {
+    base('user').find(`${req.body.user_id}`, function (err, record) {
+        const reqId = req.body.id
+        if (err) {
+            res.status(404)
+            res.send('user not found')
+            console.error(err)
+            return
+        }
+        let id = JSON.parse(record.get('wishlist'))
+        const filteredId = id.filter((item) => item.id !== reqId)
+        console.log(filteredId)
+        id = JSON.stringify(filteredId)
+        console.log(id)
+        base('user').update([
+            {
+              "id": `${req.body.user_id}`,
+              "fields": {
+                "wishlist": `${id}`
               }
             }
           ], function(err, records) {
