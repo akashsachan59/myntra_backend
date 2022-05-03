@@ -166,7 +166,7 @@ app.get('/sort', (req, res) => {
 })
 
 // ADD to cart
-app.post('/buy', (req, res) => {
+app.post('/addToCart', (req, res) => {
     base('user').find(`${req.body.user_id}`, function (err, record) {
         const reqId = req.body.id
         if (err) { 
@@ -226,7 +226,7 @@ app.post('/buy', (req, res) => {
 })
 
 // delete item from cart
-app.post('/delete_cart', (req, res) => {
+app.post('/deleteCart', (req, res) => {
     base('user').find(`${req.body.user_id}`, function (err, record) {
         const reqId = req.body.id
         if (err) {
@@ -260,7 +260,7 @@ app.post('/delete_cart', (req, res) => {
 })
 
 // Add to wishlist
-app.post('/wishlist', (req, res) => {
+app.post('/addToWishlist', (req, res) => {
     base('user').find(`${req.body.user_id}`, function (err, record) {
         const reqId = req.body.id
         if (err) { 
@@ -320,7 +320,7 @@ app.post('/wishlist', (req, res) => {
 })
 
 // delete item from wishlist
-app.post('/delete_wishlist', (req, res) => {
+app.post('/deleteWishlist', (req, res) => {
     base('user').find(`${req.body.user_id}`, function (err, record) {
         const reqId = req.body.id
         if (err) {
