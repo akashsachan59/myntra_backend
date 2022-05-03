@@ -77,9 +77,7 @@ app.post('/signup', (req, res) => {
 
 })
 
-
 // List all products
-
 app.get('/home', (req,res) => {
     base('product').select({
         view: 'Grid view'
@@ -156,7 +154,6 @@ app.get('/filter', (req, res) => {
 })
 
 // sort by price
-
 app.get('/sort', (req, res) => {
     base('product').select({
         sort: [{field: "price", direction: `${req.query.direction}`}]
