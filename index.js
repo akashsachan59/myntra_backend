@@ -43,6 +43,40 @@ app.post('/login', (req, res) => {
     });
 })
 
+// signup
+app.post('/signup', (req, res) => {
+    let reqName = req.body.name
+    let reqGender = req.body.gender
+    let reqPhone = req.body.phone
+    let reqEmail = req.body.email
+    let reqPassword = req.body.password
+    let reqAddresses = req.body.addresses
+    
+    base('user').create([
+        {
+          "fields": {
+            "name": `${reqName}`,
+            "gender": `${reqGender}`,
+            "phone": `${reqPhone}`,
+            "email": `${reqEmail}`,
+            "password": `${reqPassword}`,
+            "addresses": `${reqAddresses}`
+          }
+        }
+      ], function(err, records) {
+        if (err) {
+          res.status(500)
+          res.send('error')  
+          console.error(err);
+          return;
+        }else{
+            res.status(200)
+            res.send('success')
+        }
+      });
+
+})
+
 
 // List all products
 
