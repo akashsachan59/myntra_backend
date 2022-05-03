@@ -12,6 +12,38 @@ const port = 3000
 const Airtable = require('airtable');
 const base = new Airtable({apiKey: 'keysVKJT0WBapnQ7a'}).base('applbqSXlfIiMjO7A')
 
+// login
+app.post('/login', (req, res) => {
+    let reqEmail = req.body.email
+    let reqPassword = req.body.password
+    base('user').select({
+        filterByFormula: `{email} = "${reqEmail}"`
+    }).firstPage(function (err, records) {
+        if (err) {
+            res.status(404)
+            res.send('user not found')
+            console.error(err)
+            return
+        }
+        if (records.length > 0) {
+            let email = records[0].get('email')
+            let password = records[0].get('password')
+            if (email === reqEmail && password === reqPassword) {
+                let obj = {
+                    token: records[0].get('user_id'),
+                    is_loggedin: true
+                }
+                res.status(200)
+                res.send(obj)
+            }else{
+                res.status(404)
+                res.send('wrong password')
+            }
+        }
+    });
+})
+
+
 // List all products
 
 app.get('/home', (req,res) => {
