@@ -94,6 +94,21 @@ app.get('/home', (req,res) => {
     });
 })
 
+// show detail product
+app.get('/product', (req,res) => {
+    base('product').select({
+        filterByFormula: `id = "${req.query.id}"`
+    }).firstPage(function(err, records) {
+        if (err) {
+            res.status(404).send('product not found')
+            console.error(err)
+            return 
+        }
+        let obj = records[0].fields
+        res.status(200).send(obj)
+    });
+})
+
 // Search all products
 app.get('/search', (req, res) => {
     base('product').select({
