@@ -5,7 +5,9 @@ const cors = require('cors')
 const app = express()
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
-app.use(cors())
+app.use(cors({
+    origin: '*'
+}))
 
 const port = 3000
 
@@ -14,14 +16,21 @@ const base = new Airtable({apiKey: 'keysVKJT0WBapnQ7a'}).base('applbqSXlfIiMjO7A
 
 // login
 app.post('/login', (req, res) => {
+    console.log("got hit")
+    console.log()
     let reqEmail = req.body.email
     let reqPassword = req.body.password
+    console.log(reqEmail,reqPassword)
     base('user').select({
         filterByFormula: `{email} = "${reqEmail}"`
     }).firstPage(function (err, records) {
+        console.log(records.length)
         if (err) {
+            let obj = {
+                message: "user not found"
+            }
             res.status(404)
-            res.send('user not found')
+            res.send(obj)
             console.error(err)
             return
         }
@@ -31,14 +40,25 @@ app.post('/login', (req, res) => {
             if (email === reqEmail && password === reqPassword) {
                 let obj = {
                     token: records[0].get('user_id'),
-                    is_loggedin: true
+                    isloggedin: true
                 }
                 res.status(200)
                 res.send(obj)
             }else{
+                let obj = {
+                    token: 'wrong password',
+                    isloggedin: false
+                }
                 res.status(404)
-                res.send('wrong password')
+                res.send(obj)
             }
+        }else{
+            let obj = {
+                token: 'No user found',
+                isloggedin: false
+            }
+            res.status(404)
+            res.send(obj)
         }
     });
 })
@@ -70,8 +90,12 @@ app.post('/signup', (req, res) => {
           console.error(err);
           return;
         }else{
+            let obj = {
+                user: true,
+                msg: "user successfully created"
+            }
             res.status(200)
-            res.send('success')
+            res.send(obj)
         }
       });
 
