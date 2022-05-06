@@ -215,7 +215,10 @@ app.post('/addToCart', (req, res) => {
                     console.error(err);
                     return;
                 } else {
-                    res.send('Added to cart')
+                    let obj = {
+                        msg: 'Added to cart'
+                    }
+                    res.send(obj)
                 }
 
             });
@@ -244,7 +247,11 @@ app.post('/addToCart', (req, res) => {
                     console.error(err);
                     return;
                 } else {
-                    res.send(records[0].fields.cart)
+                    let obj = {
+                        res: true,
+                        msg: `Item Added : ${reqId}`
+                    }
+                    res.send(obj)
                 }
             });
         }
@@ -380,7 +387,11 @@ app.post('/addToWishlist', (req, res) => {
                     console.error(err);
                     return;
                 } else {
-                    res.send(records[0].fields.wishlist)
+                    let obj = {
+                        res: true,
+                        msg: `Item Added : ${reqId}`
+                    }
+                    res.send(obj)
                 }
             });
         }
@@ -459,6 +470,15 @@ app.get('/wishlist', (req, res) => {
         console.error(err)
     }
 })
+
+// move to cart
+// app.post('/moveToCart', (req, res) => {
+//     try {
+
+//         } catch (error) {
+//         console.log(error)
+//     }
+// })
 
 app.listen(port, () => {
     console.log(`App listening on port ${port}`)
