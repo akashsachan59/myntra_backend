@@ -344,6 +344,7 @@ app.post('/addToWishlist', (req, res) => {
             ], function (err, records) {
                 if (err) {
                     console.error(err);
+                    res.send(err)
                     return;
                 }else{
                     res.send('Added to wishlist')
@@ -352,9 +353,12 @@ app.post('/addToWishlist', (req, res) => {
             });
         } else {
             let id = JSON.parse(record.get('wishlist'))
-            let checkDuplicate = id.find(o => o.id === `${reqId}`) 
+            let checkDuplicate = id.find(rec => rec.id === `${reqId}`) 
             if(checkDuplicate){
-                res.send('Already Added to Wishlist')
+                let obj = {
+                    msg: 'product already in wishlist'
+                }
+                res.send(obj)
                 return
             }
             id.splice(0, 0, {id:reqId})
@@ -412,6 +416,40 @@ app.post('/deleteWishlist', (req, res) => {
             });
           });
     })
+})
+
+// get wishlist items
+app.get('/wishlist', (req, res) => {
+    try {
+        let data = []
+        base('user').select({
+            filterByFormula: `user_id = "${req.query.user}"`
+        }).firstPage(function (err, records) {
+            if (err) {
+                console.error(err);
+                return;
+            }
+            let id = JSON.parse(records[0].fields.wishlist)
+            console.log(id)
+            id.forEach(function (record,idx) {
+                base('product').select({
+                    filterByFormula: `id = "${record.id}"`
+                }).firstPage(function (err, records) {
+                    if (err) {
+                        console.error(err);
+                        return;
+                    }
+                    data.push(records[0].fields)
+                    if(idx === id.length-1){
+                        res.send(data)
+                    }
+                })
+             })
+
+        });
+    } catch (err) {
+        console.error(err)
+    }
 })
 
 app.listen(port, () => {
